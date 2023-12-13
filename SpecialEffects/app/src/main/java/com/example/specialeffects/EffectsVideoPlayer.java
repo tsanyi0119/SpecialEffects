@@ -12,16 +12,18 @@ public class EffectsVideoPlayer {
     private MediaPlayer mediaPlayer;
     private TextureView textureView;
     private Context context;
+    private int effectSelect;
+    public final int video_effect_1 = 1;
+    public final int video_effect_2 = 2;
+    public final int video_effect_3 = 3;
 
     public EffectsVideoPlayer(Context context, TextureView textureView) {
         this.textureView = textureView;
         this.context = context;
-        if (textureView != null) {
-            setListener();
-        }
     }
 
-    private void setListener(){
+    public void addEffectsVideoListener(int effectSelect){
+        this.effectSelect = effectSelect;
         textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
             public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
@@ -54,7 +56,22 @@ public class EffectsVideoPlayer {
     private void prepareMediaPlayer() {
         try {
             mediaPlayer = new MediaPlayer();
-            AssetFileDescriptor afd = context.getResources().openRawResourceFd(R.raw.video_effect_3); // 替換 "your_video_file" 為你的 MP4 文件名稱（不包括擴展名）
+            AssetFileDescriptor afd = null;
+
+            switch (effectSelect) {
+                case video_effect_1:
+                    afd = context.getResources().openRawResourceFd(R.raw.video_effect_1);
+                    break;
+                case video_effect_2:
+                    afd = context.getResources().openRawResourceFd(R.raw.video_effect_2);
+                    break;
+                case video_effect_3:
+                    afd = context.getResources().openRawResourceFd(R.raw.video_effect_3);
+                    break;
+                default:
+                    // 預設的處理邏輯
+                    break;
+            }
 
             if (afd != null) {
                 mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());

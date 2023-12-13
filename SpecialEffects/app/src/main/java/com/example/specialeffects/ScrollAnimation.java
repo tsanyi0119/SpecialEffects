@@ -10,6 +10,7 @@ import android.widget.ScrollView;
 public class ScrollAnimation {
 
     ScrollView scrollView;
+    ValueAnimator currentAnimator; // 用來存儲當前運行的動畫
 
     public final int S1_Animation = 1;
     public final int S2_Animation = 2;
@@ -21,27 +22,27 @@ public class ScrollAnimation {
         this.scrollView = scrollView;
     }
 
-    public void addOnGlobalLayoutListener(int animationSelect) {
+    public void addOnGlobalLayoutListener(int animationSelect, int time) {
         // 監聽ScrollView內容的佈局完成事件
         scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 // 在佈局完成後執行相關邏輯
                 switch (animationSelect) {
-                    case 1:
-                        scroll_S1_Animation();
+                    case S1_Animation:
+                        scroll_S1_Animation(time);
                         break;
-                    case 2:
-                        scroll_S2_Animation();
+                    case S2_Animation:
+                        scroll_S2_Animation(time);
                         break;
-                    case 3:
-                        scroll_S3_Animation();
+                    case S3_Animation:
+                        scroll_S3_Animation(time);
                         break;
-                    case 4:
-                        scroll_S4_Animation();
+                    case S4_Animation:
+                        scroll_S4_Animation(time);
                         break;
-                    case 5:
-                        scroll_S5_Animation();
+                    case S5_Animation:
+                        scroll_S5_Animation(time);
                         break;
                     default:
                 }
@@ -49,29 +50,43 @@ public class ScrollAnimation {
         });
     }
 
-    public void startAnimation(int animationSelect){
+    public void startAnimation(int animationSelect, int time) {
         switch (animationSelect) {
-            case 1:
-                scroll_S1_Animation();
+            case S1_Animation:
+                scroll_S1_Animation(time);
                 break;
-            case 2:
-                scroll_S2_Animation();
+            case S2_Animation:
+                scroll_S2_Animation(time);
                 break;
-            case 3:
-                scroll_S3_Animation();
+            case S3_Animation:
+                scroll_S3_Animation(time);
                 break;
-            case 4:
-                scroll_S4_Animation();
+            case S4_Animation:
+                scroll_S4_Animation(time);
                 break;
-            case 5:
-                scroll_S5_Animation();
+            case S5_Animation:
+                scroll_S5_Animation(time);
                 break;
             default:
         }
     }
 
+    // 暫停動畫
+    public void pauseAnimation() {
+        if (currentAnimator != null && currentAnimator.isRunning()) {
+            currentAnimator.pause();
+        }
+    }
+
+    // 繼續動畫
+    public void resumeAnimation() {
+        if (currentAnimator != null && currentAnimator.isPaused()) {
+            currentAnimator.resume();
+        }
+    }
+
     // C>B>C
-    private void scroll_S1_Animation() {
+    private void scroll_S1_Animation(int time) {
         // 獲取ScrollView的內容高度
         final int scrollRange = scrollView.getChildAt(0).getHeight() - scrollView.getHeight();
 
@@ -80,7 +95,7 @@ public class ScrollAnimation {
 
         // 創建ValueAnimator實例，用於模擬滾動動畫
         final ValueAnimator animator = ValueAnimator.ofInt(scrollRange / 2, scrollRange);
-        animator.setDuration(10000);
+        animator.setDuration((time/2)*1000);
         animator.setInterpolator(new LinearInterpolator()); // 使用線性插值器
 
         // 設置動畫更新的監聽器
@@ -98,7 +113,7 @@ public class ScrollAnimation {
             @Override
             public void onAnimationEnd(Animator animation) {
                 // 在第一個動畫結束時開始第二個動畫
-                start_S1_ReverseAnimation();
+                start_S1_ReverseAnimation(time);
 
                 // 移除監聽器
                 animator.removeAllUpdateListeners();
@@ -108,15 +123,17 @@ public class ScrollAnimation {
 
         // 開始動畫
         animator.start();
+        currentAnimator = animator; // 記錄當前動畫
     }
+
     // 開始反向動畫
-    private void start_S1_ReverseAnimation() {
+    private void start_S1_ReverseAnimation(int time) {
         // 獲取ScrollView的內容高度
         final int scrollRange = scrollView.getChildAt(0).getHeight() - scrollView.getHeight();
 
         // 創建ValueAnimator實例，用於模擬滾動動畫
         ValueAnimator reverseAnimator = ValueAnimator.ofInt(scrollRange, scrollRange / 2);
-        reverseAnimator.setDuration(10000);
+        reverseAnimator.setDuration((time/2)*1000);
         reverseAnimator.setInterpolator(new LinearInterpolator()); // 使用線性插值器
 
         // 設置動畫更新的監聽器
@@ -141,12 +158,13 @@ public class ScrollAnimation {
 
         // 開始反向動畫
         reverseAnimator.start();
+        currentAnimator = reverseAnimator; // 記錄當前動畫
     }
 
     //--------------------------------------------------------------------------
 
     // C>B>C>T
-    private void scroll_S2_Animation() {
+    private void scroll_S2_Animation(int time) {
         // 獲取ScrollView的內容高度
         final int scrollRange = scrollView.getChildAt(0).getHeight() - scrollView.getHeight();
 
@@ -155,7 +173,7 @@ public class ScrollAnimation {
 
         // 創建ValueAnimator實例，用於模擬滾動動畫
         final ValueAnimator animator = ValueAnimator.ofInt(scrollRange / 2, scrollRange);
-        animator.setDuration(10000);
+        animator.setDuration((time/3)*1000);
         animator.setInterpolator(new LinearInterpolator()); // 使用線性插值器
 
         // 設置動畫更新的監聽器
@@ -173,22 +191,23 @@ public class ScrollAnimation {
             @Override
             public void onAnimationEnd(Animator animation) {
                 // 在第一個動畫結束時開始第二個動畫
-                start_S2_ReverseAnimation();
+                start_S2_ReverseAnimation(time);
             }
         });
 
         // 開始動畫
         animator.start();
+        currentAnimator = animator; // 記錄當前動畫
     }
 
     // 開始反向動畫
-    private void start_S2_ReverseAnimation() {
+    private void start_S2_ReverseAnimation(int time) {
         // 獲取ScrollView的內容高度
         final int scrollRange = scrollView.getChildAt(0).getHeight() - scrollView.getHeight();
 
         // 創建ValueAnimator實例，用於模擬滾動動畫
         ValueAnimator reverseAnimator = ValueAnimator.ofInt(scrollRange, 0);
-        reverseAnimator.setDuration(20000);
+        reverseAnimator.setDuration((time/3)*2*1000); // 修改為與第一個動畫同樣的時間長度
         reverseAnimator.setInterpolator(new LinearInterpolator()); // 使用線性插值器
 
         // 設置動畫更新的監聽器
@@ -213,21 +232,22 @@ public class ScrollAnimation {
 
         // 開始反向動畫
         reverseAnimator.start();
+        currentAnimator = reverseAnimator; // 記錄當前動畫
     }
 
     //--------------------------------------------------------------------------
 
     // C>B
-    private void scroll_S3_Animation() {
+    private void scroll_S3_Animation(int time) {
         // 獲取ScrollView的內容高度
         final int scrollRange = scrollView.getChildAt(0).getHeight() - scrollView.getHeight();
 
         // 設置ScrollView一開始在中間
-        scrollView.scrollTo(0, scrollRange / 2);
+        scrollView.scrollTo(0, 0);
 
         // 創建ValueAnimator實例，用於模擬滾動動畫
-        final ValueAnimator animator = ValueAnimator.ofInt(scrollRange / 2, scrollRange);
-        animator.setDuration(30000);
+        final ValueAnimator animator = ValueAnimator.ofInt(0, scrollRange / 2);
+        animator.setDuration(time*1000);
         animator.setInterpolator(new LinearInterpolator()); // 使用線性插值器
 
         // 設置動畫更新的監聽器
@@ -252,12 +272,13 @@ public class ScrollAnimation {
 
         // 開始動畫
         animator.start();
+        currentAnimator = animator; // 記錄當前動畫
     }
 
     //--------------------------------------------------------------------------
 
     // T>B
-    private void scroll_S4_Animation() {
+    private void scroll_S4_Animation(int time) {
         // 獲取ScrollView的內容高度
         final int scrollRange = scrollView.getChildAt(0).getHeight() - scrollView.getHeight();
 
@@ -266,7 +287,7 @@ public class ScrollAnimation {
 
         // 創建ValueAnimator實例，用於模擬滾動動畫
         final ValueAnimator animator = ValueAnimator.ofInt(0, scrollRange);
-        animator.setDuration(30000);
+        animator.setDuration(time*1000);
         animator.setInterpolator(new LinearInterpolator()); // 使用線性插值器
 
         // 設置動畫更新的監聽器
@@ -289,14 +310,28 @@ public class ScrollAnimation {
             }
         });
 
+        // 暫停和繼續功能
+        animator.addPauseListener(new Animator.AnimatorPauseListener() {
+            @Override
+            public void onAnimationPause(Animator animation) {
+                // 在動畫暫停時的邏輯處理
+            }
+
+            @Override
+            public void onAnimationResume(Animator animation) {
+                // 在動畫繼續時的邏輯處理
+            }
+        });
+
         // 開始動畫
         animator.start();
+        currentAnimator = animator; // 記錄當前動畫
     }
 
     //--------------------------------------------------------------------------
 
     // B>T
-    private void scroll_S5_Animation() {
+    private void scroll_S5_Animation(int time) {
         // 獲取ScrollView的內容高度
         final int scrollRange = scrollView.getChildAt(0).getHeight() - scrollView.getHeight();
 
@@ -305,7 +340,7 @@ public class ScrollAnimation {
 
         // 創建ValueAnimator實例，用於模擬滾動動畫
         final ValueAnimator animator = ValueAnimator.ofInt(scrollRange, 0);
-        animator.setDuration(30000);
+        animator.setDuration(time*1000);
         animator.setInterpolator(new LinearInterpolator()); // 使用線性插值器
 
         // 設置動畫更新的監聽器
@@ -322,7 +357,7 @@ public class ScrollAnimation {
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                // 移除監聽器
+                // 在動畫結束時，移除監聽器
                 animator.removeAllUpdateListeners();
                 animator.removeAllListeners();
             }
@@ -330,6 +365,7 @@ public class ScrollAnimation {
 
         // 開始動畫
         animator.start();
+        currentAnimator = animator; // 記錄當前動畫
     }
 
 
